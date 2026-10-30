@@ -13,7 +13,8 @@
 
 ## 一、在线与本地预览
 
-- 部署后：`https://<你的账号>.github.io/<仓库名>/`（详见第四节）
+- **线上地址：<https://woaadan.github.io/poetry-atlas/>**（GitHub Pages，已部署）
+- 仓库：<https://github.com/woaadan/poetry-atlas>
 - 本地：双击 `本地预览.ps1`，或在该目录执行
 
   ```bash
