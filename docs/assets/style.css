@@ -1,0 +1,132 @@
+:root{
+  --paper:#f7f2e8; --paper2:#fffdf8; --ink:#1e1a15; --ink2:#4a4238; --ink3:#8a7f70;
+  --line:#ddd2bf; --accent:#b23a2f; --blue:#2f5d73; --green:#5b7c5a; --gold:#a9823f;
+  --purple:#6b4f7a; --shadow:0 1px 2px rgba(60,45,20,.06),0 8px 24px rgba(60,45,20,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong",SimSun,serif;
+  font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(circle at 20% 0%,rgba(178,58,47,.05),transparent 45%),
+                   radial-gradient(circle at 85% 10%,rgba(47,93,115,.05),transparent 40%);
+}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header.hero{padding:58px 0 26px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+.eyebrow{letter-spacing:.42em;font-size:12px;color:var(--accent);margin-bottom:14px}
+h1{font-size:46px;line-height:1.2;margin:0 0 14px;letter-spacing:.06em;font-weight:600}
+h1 small{font-size:17px;color:var(--ink3);letter-spacing:.18em;font-weight:400;display:block;margin-top:10px}
+.lede{max-width:720px;color:var(--ink2);font-size:15.5px;margin:0}
+.seal{width:96px;height:96px;border:2px solid var(--accent);color:var(--accent);display:grid;
+  place-items:center;font-size:13px;letter-spacing:.28em;line-height:1.5;text-align:center;
+  border-radius:4px;transform:rotate(-3deg);opacity:.85;writing-mode:vertical-rl;padding:8px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:30px 0 10px}
+.kpi{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow)}
+.kpi b{display:block;font-size:26px;line-height:1.2;color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--ink3);letter-spacing:.08em}
+.kpi em{font-style:normal;color:var(--accent)}
+
+/* ---------- nav ---------- */
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(247,242,232,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line)}
+.tabs-inner{max-width:1240px;margin:0 auto;padding:0 28px;display:flex;gap:6px;overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:14px 16px;font:inherit;
+  font-size:14.5px;color:var(--ink2);cursor:pointer;white-space:nowrap;letter-spacing:.06em}
+.tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tabnum{font-size:11px;color:var(--ink3);margin-right:6px}
+
+/* ---------- sections ---------- */
+main{padding:34px 0 60px}
+section.view{display:none;animation:fade .35s ease}
+section.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin:34px 0 18px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.sec-head h2{font-size:24px;margin:0;letter-spacing:.08em;font-weight:600}
+.sec-head .num{font-size:13px;color:var(--accent);letter-spacing:.3em}
+.sec-head p{margin:0 0 0 auto;color:var(--ink3);font-size:13px;max-width:520px;text-align:right}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g21{grid-template-columns:1.55fr 1fr}
+.g12{grid-template-columns:1fr 1.55fr}
+.card{background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:18px 20px 14px;box-shadow:var(--shadow);position:relative}
+.card h3{margin:0 0 2px;font-size:16px;letter-spacing:.06em;font-weight:600}
+.card .sub{color:var(--ink3);font-size:12.5px;margin:0 0 10px}
+.card .note{color:var(--ink3);font-size:12px;margin-top:8px;line-height:1.6}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tooltip{position:absolute;pointer-events:none;background:rgba(30,26,21,.94);color:#f7f2e8;
+  padding:8px 11px;border-radius:6px;font-size:12.5px;line-height:1.55;opacity:0;transition:opacity .12s;
+  transform:translate(-50%,-112%);white-space:nowrap;z-index:20}
+.tooltip b{color:#e8c07a;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 4px;font-size:12px;color:var(--ink2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--paper2);color:var(--ink2);border-radius:999px;
+  padding:5px 13px;font:inherit;font-size:12.5px;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--ink3)}
+.chip.active{background:var(--ink);color:var(--paper2);border-color:var(--ink)}
+input.search{font:inherit;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background:var(--paper2);color:var(--ink);width:220px}
+input.search:focus{outline:2px solid rgba(178,58,47,.25);border-color:var(--accent)}
+
+/* ---------- poet profile ---------- */
+.profile{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;margin-top:14px}
+.profile .name{font-size:22px;letter-spacing:.1em;margin:0 0 4px}
+.profile .meta{color:var(--ink3);font-size:12.5px;margin-bottom:10px}
+.titles{max-height:280px;overflow:auto;font-size:13px;color:var(--ink2);padding-right:6px}
+.titles li{margin-bottom:7px;line-height:1.55}
+.titles li span{color:var(--ink3);font-size:11.5px;margin-left:6px}
+.wordtags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.wordtags span{background:rgba(178,58,47,.08);color:var(--accent);border:1px solid rgba(178,58,47,.18);
+  border-radius:999px;padding:2px 10px;font-size:12px}
+
+/* ---------- table ---------- */
+table.dt{width:100%;border-collapse:collapse;font-size:13px}
+table.dt th,table.dt td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+table.dt th{color:var(--ink3);font-weight:500;font-size:12px;letter-spacing:.08em;position:sticky;top:0;background:var(--paper2)}
+table.dt td.num{text-align:right;font-variant-numeric:tabular-nums}
+table.dt tr:hover td{background:rgba(178,58,47,.04)}
+.scroll{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+
+/* ---------- topics ---------- */
+.topics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.topic{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--paper2)}
+.topic h4{margin:0 0 6px;font-size:14px;letter-spacing:.06em}
+.topic .bar{height:4px;background:var(--line);border-radius:2px;margin:8px 0}
+.topic .bar i{display:block;height:100%;background:var(--accent);border-radius:2px}
+.topic p{margin:0;font-size:12px;color:var(--ink2);line-height:1.8}
+
+/* ---------- misc ---------- */
+.method{columns:2;column-gap:34px;font-size:14px;color:var(--ink2)}
+.method p{margin:0 0 12px;break-inside:avoid}
+.formula{font-family:"Cambria Math",Cambria,Georgia,serif;background:rgba(47,93,115,.06);
+  border-left:3px solid var(--blue);padding:8px 14px;margin:12px 0;font-size:14.5px;color:var(--ink);overflow-x:auto}
+.dl{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dl a{display:block;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper2);
+  color:var(--ink);box-shadow:var(--shadow)}
+.dl a b{display:block;font-size:14px;margin-bottom:3px}
+.dl a span{font-size:12px;color:var(--ink3)}
+.dl a:hover{border-color:var(--accent);text-decoration:none}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);font-size:12.5px}
+footer .row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.loading{display:flex;align-items:center;justify-content:center;height:180px;color:var(--ink3);font-size:13px;letter-spacing:.2em}
+@media (max-width:1000px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .g2,.g3,.g21,.g12{grid-template-columns:1fr}
+  .topics{grid-template-columns:repeat(2,1fr)}
+  h1{font-size:34px}
+  .seal{display:none}
+  .hero-grid{grid-template-columns:1fr}
+  .method{columns:1}
+  .dl{grid-template-columns:1fr}
+  .profile{grid-template-columns:1fr}
+}

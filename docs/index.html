@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>诗海图谱 · 历代诗人诗作的文本挖掘</title>
+<meta name="description" content="以 47,573 位诗人、1,825,049 首（篇）诗作为对象，用字符级 n-gram 新词发现、TF-IDF、log-odds、LDA 主题模型、共现网络与地理意象统计做的一次数字人文可视化实验。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23b23a2f'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23f7f2e8'>诗</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">DIGITAL HUMANITIES · TEXT MINING</div>
+        <h1>诗海图谱
+          <small>四万七千位诗人 · 一百八十万首诗作的计算阅读</small>
+        </h1>
+        <p class="lede">
+          本页把一张「人物诗作表」拆成可计算的语料：先做体裁与年代的结构统计，再从诗题里自动发现词、
+          度量每个时代的用词偏好，用主题模型与共现网络勾勒诗歌的知识地形，最后把地名意象落回地图。
+          所有图表都由本页自带的脚本在浏览器里实时绘制，没有外部依赖。
+        </p>
+      </div>
+      <div class="seal">诗海图谱</div>
+    </div>
+    <div class="kpis" id="kpis">
+      <div class="kpi"><b>—</b><span>诗人</span></div>
+      <div class="kpi"><b>—</b><span>诗作</span></div>
+      <div class="kpi"><b>—</b><span>独立诗题</span></div>
+      <div class="kpi"><b>—</b><span>体裁</span></div>
+      <div class="kpi"><b>—</b><span>基尼系数</span></div>
+      <div class="kpi"><b>—</b><span>唱和题名占比</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs"><div class="tabs-inner" id="tabs">
+  <button data-view="overview" class="active"><span class="tabnum">壹</span>概览</button>
+  <button data-view="poets"><span class="tabnum">贰</span>诗人与产量</button>
+  <button data-view="language"><span class="tabnum">叁</span>语言与意象</button>
+  <button data-view="topics"><span class="tabnum">肆</span>主题模型</button>
+  <button data-view="networks"><span class="tabnum">伍</span>网络</button>
+  <button data-view="geo"><span class="tabnum">陆</span>地理意象</button>
+  <button data-view="data"><span class="tabnum">柒</span>数据与方法</button>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ============ 壹 · 概览 ============ -->
+<section class="view active" id="view-overview">
+  <div class="sec-head"><span class="num">壹</span><h2>千年诗史的规模与结构</h2>
+    <p>以「分期」为横轴，看诗人、诗作与体裁构成如何在时间里膨胀、分化。</p></div>
+
+  <div class="grid g21">
+    <div class="card">
+      <h3>各时期诗人与诗作规模</h3>
+      <p class="sub">左轴：诗人数（线）；右轴：诗作数（面积）。宋、明、清三代构成语料的主体。</p>
+      <div class="chart" id="c-scale"></div>
+      <p class="note" id="n-scale"></p>
+    </div>
+    <div class="card">
+      <h3>体裁构成</h3>
+      <p class="sub">十九种体裁合并为六类后的占比，悬停查看具体数量。</p>
+      <div class="chart" id="c-donut"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>体裁构成的千年流变</h3>
+    <p class="sub">堆叠面积图：每一时期各体裁所占份额。近体诗（律诗、绝句）的扩张与词曲的兴替清晰可见。</p>
+    <div class="chart" id="c-stream"></div>
+    <p class="note">说明：份额以该时期全部诗作（含文、赋、联等）为分母。断代标签经过 224 种原始写法归一化，跨代标签（如「明末清初」）取主要朝代。</p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>朝代 × 体裁 热力图</h3>
+    <p class="sub">按行归一化（对数色阶），观察每个朝代内部各体裁的相对比重。</p>
+    <div class="chart" id="c-heat"></div>
+  </div>
+</section>
+
+<!-- ============ 贰 · 诗人 ============ -->
+<section class="view" id="view-poets">
+  <div class="sec-head"><span class="num">贰</span><h2>诗人的产量分布</h2>
+    <p>诗歌生产是极端不均的：少数人写下大部分作品。这一节用幂律、洛伦兹曲线与基尼系数刻画它。</p></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>产量—排名 双对数图</h3>
+      <p class="sub">横轴为诗人排名（log），纵轴为诗作数（log）。直线意味着幂律（Zipf）分布。</p>
+      <div class="chart" id="c-rank"></div>
+      <p class="note" id="n-rank"></p>
+    </div>
+    <div class="card">
+      <h3>洛伦兹曲线</h3>
+      <p class="sub">横轴：诗人累计占比；纵轴：诗作累计占比。对角线与曲线的距离即不平等程度。</p>
+      <div class="chart" id="c-lorenz"></div>
+      <p class="note" id="n-lorenz"></p>
+    </div>
+  </div>
+
+  <div class="grid g12" style="margin-top:20px">
+    <div class="card">
+      <h3>产量分布直方图</h3>
+      <p class="sub">横轴为诗作数（对数分箱）。半数诗人只留下 1—2 首，长尾一直延伸到数千首。</p>
+      <div class="chart" id="c-hist"></div>
+    </div>
+    <div class="card">
+      <h3>产量最高的四十位诗人</h3>
+      <p class="sub">按诗作数排序，颜色表示所属时期。</p>
+      <div class="chart" id="c-top"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>诗人档案检索</h3>
+    <p class="sub">输入姓名（如「杜甫」「陆游」「苏轼」），查看其体裁结构、常用词与代表诗题。</p>
+    <div class="controls">
+      <input class="search" id="poet-search" placeholder="搜索诗人姓名…" autocomplete="off">
+      <span class="chip active" data-poet="auto">按产量推荐</span>
+      <span class="note" id="poet-hint"></span>
+    </div>
+    <div class="profile">
+      <div>
+        <h4 class="name" id="poet-name">—</h4>
+        <div class="meta" id="poet-meta"></div>
+        <div class="wordtags" id="poet-words"></div>
+        <ul class="titles" id="poet-titles"></ul>
+      </div>
+      <div class="chart" id="c-radar"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 叁 · 语言 ============ -->
+<section class="view" id="view-language">
+  <div class="sec-head"><span class="num">叁</span><h2>诗题里的语言世界</h2>
+    <p>没有分词器，就用凝固度（PMI）与邻接熵从一百八十万条诗题里「养」出一个词表，再看它如何随时代表情。</p></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>最高频的字</h3>
+      <p class="sub">单字频率（自动剔除数字与标点）。山水、风月、春秋是最基础的语汇层。</p>
+      <div class="chart" id="c-chars"></div>
+    </div>
+    <div class="card">
+      <h3>最高频的词</h3>
+      <p class="sub">由 n-gram 自动发现的二字及以上词条，按出现次数排序。</p>
+      <div class="chart" id="c-words"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>每个时代的「口头禅」</h3>
+    <p class="sub">用带信息先验的 log-odds 模型比较某时期与其余全部语料：向右是该时期偏好的词，向左是被冷落的词。z 值越大，差异越显著。</p>
+    <div class="controls" id="period-chips"></div>
+    <div class="chart" id="c-terms"></div>
+    <p class="note" id="n-terms"></p>
+  </div>
+
+  <div class="grid g21" style="margin-top:20px">
+    <div class="card">
+      <h3>词条的生命周期</h3>
+      <p class="sub">十二个意象词在五十年时间窗内的千分比曲线。曲线的高低起伏，是题材与趣味的迁移。</p>
+      <div class="chart" id="c-life"></div>
+    </div>
+    <div class="card">
+      <h3>共现网络</h3>
+      <p class="sub">同一诗题中共现的词，按 PMI 加权连边（每词保留最强的 3 条边）。节点大小＝连边数，颜色＝词频四分位。</p>
+      <div class="chart" id="c-net"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 肆 · 主题 ============ -->
+<section class="view" id="view-topics">
+  <div class="sec-head"><span class="num">肆</span><h2>主题模型：诗题的十类面貌</h2>
+    <p>在 8 万条诗体诗题上跑坍缩吉布斯采样的 LDA（K=10），用 UMass 一致性评估主题质量。诗题短而程式化，主题更接近题名的功能类型。</p></div>
+
+  <div class="topics" id="topic-cards"></div>
+
+  <div class="grid g2" style="margin-top:20px">
+    <div class="card">
+      <h3>主题 × 时期 分布</h3>
+      <p class="sub">每格为该时期文档归属于该主题的平均概率（θ）。</p>
+      <div class="chart" id="c-topicheat"></div>
+    </div>
+    <div class="card">
+      <h3>主题规模与一致性</h3>
+      <p class="sub">柱：主题占比（θ&gt;0.15 的文档比例）；点：UMass 一致性分数。</p>
+      <div class="chart" id="c-topicshare"></div>
+      <p class="note" id="n-topics"></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>主题代表诗题</h3>
+    <p class="sub">每个主题下 θ 最高的八条诗题，看模型究竟抓到了什么。</p>
+    <div class="chart" id="c-topictitles"></div>
+  </div>
+</section>
+
+<!-- ============ 伍 · 网络 ============ -->
+<section class="view" id="view-networks">
+  <div class="sec-head"><span class="num">伍</span><h2>诗人之间的相似与往来</h2>
+    <p>把每位诗人写成一个 TF-IDF 向量，用余弦相似度连边——风格相近的人会自己聚成团。</p></div>
+
+  <div class="card">
+    <h3>风格邻近网络（Top 160 诗人）</h3>
+    <p class="sub">节点颜色＝时期，节点大小＝诗作数；每条边取相似度最高的 4 个邻居。</p>
+    <div class="chart" id="c-simnet"></div>
+    <p class="note" id="n-simnet"></p>
+  </div>
+
+  <div class="grid g2" style="margin-top:20px">
+    <div class="card">
+      <h3>唱和题名的比重</h3>
+      <p class="sub">诗题中出现「和…韵」「次韵」「酬」「赠」「寄」等交往语汇的比例，按时期统计。</p>
+      <div class="chart" id="c-harmony"></div>
+    </div>
+    <div class="card">
+      <h3>体裁多样性与产量</h3>
+      <p class="sub">横轴：诗作数（log）；纵轴：体裁的香农熵。高产者未必更「杂食」。</p>
+      <div class="chart" id="c-entropy"></div>
+      <p class="note" id="n-entropy"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 陆 · 地理 ============ -->
+<section class="view" id="view-geo">
+  <div class="sec-head"><span class="num">陆</span><h2>诗题里的地名</h2>
+    <p>用一份二百余条的名胜地名词表扫描诗题，把「江南」「长安」「洞庭」还原成可统计的空间意象。</p></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>今省区（含区域泛称）出现次数</h3>
+      <p class="sub">同一诗题中重复出现只计一次；「江南」「塞外」等区域泛称单列。</p>
+      <div class="chart" id="c-prov"></div>
+    </div>
+    <div class="card">
+      <h3>最常被写入诗题的地名</h3>
+      <p class="sub">前三十个地名及其所属区域。</p>
+      <div class="chart" id="c-places"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>地名的时代曲线</h3>
+    <p class="sub">八个核心地名在各时期的千分比（每张小图纵轴各自归一）。江南随唐而盛，西湖随宋而兴。</p>
+    <div class="chart" id="c-geotime"></div>
+    <p class="note" id="n-geo"></p>
+  </div>
+</section>
+
+<!-- ============ 柒 · 数据与方法 ============ -->
+<section class="view" id="view-data">
+  <div class="sec-head"><span class="num">柒</span><h2>数据、方法与复现</h2>
+    <p>全部图表由下表与脚本生成，可下载、可复现、可部署。</p></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>方法要点</h3>
+      <div class="method">
+        <p><b>一、语料清洗。</b>原始表 47,574 行、8 列，声明的诗作总数为 1,996,305 首（篇）；按「；」切分诗题列表，以 18 种体裁后缀做右端匹配，实际解析出 1,825,049 条题名（占比 91.4%）。差额集中在 90 位极高产诗人——Excel 单元格 32,767 字符的上限截断了他们的题名列表（如乾隆声明 43,290 首，仅解析 3,378 条），故产量统计以原表声明数为准，文本挖掘以已解析题名为准。诗题中数字统一为占位符，异体字归一（如「絶」「絕」并作「绝」，「淸」并作「清」）。</p>
+        <p><b>二、无监督新词发现。</b>统计二字、三字 n-gram，用凝固度 PMI 过滤搭配，再用左右邻接字符的信息熵过滤「边界不稳定」的片段，得到 1,995 个词条，并补入诗学领域词表；最后以最长匹配切分诗题。约 44% 的诗题能切出至少一个词条，其余多为专名与短题。</p>
+        <p><b>三、时期特征词。</b>采用 Monroe 等（2008）的 log-odds ratio with informative Dirichlet prior，以 z 值衡量某时期相对于其余语料的用词偏好；比较仅在诗体（律、绝、古风、词曲等）中进行，避免制诰类标题的干扰。先秦、秦汉两期诗体样本过少，不参与估计。</p>
+        <p><b>四、主题模型。</b>坍缩吉布斯采样的 LDA，K=10，α=0.15，β=0.01，35 轮迭代，取 8 万条诗体诗题；以 UMass 一致性（前十词）评估。因诗题短且程式化，主题更接近「题名功能」（纪游、唱和、岁时等），而非抽象母题。</p>
+        <p><b>五、网络。</b>词共现按 PMI 加权，每词保留最强的 3 条边；诗人相似度用 TF-IDF 余弦，取每点前 4 邻居。二维坐标由<strong>经典多维标度（MDS）</strong>在相似度矩阵上求得——比力导向布局稳定、可复现，坐标间距离近似保留原始相似度结构。</p>
+        <p><b>六、分布拟合。</b>产量—排名双对数最小二乘拟合幂指数，并用 Hill 估计量复核上尾；洛伦兹曲线与基尼系数刻画集中度。</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>关键公式</h3>
+      <div class="formula">PMI(w) = log [ p(w) / ∏<sub>i</sub> p(c<sub>i</sub>) ]　（凝固度）</div>
+      <div class="formula">H<sub>L/R</sub>(w) = − Σ<sub>x</sub> p(x|w) log p(x|w)　（左右邻接熵）</div>
+      <div class="formula">G = (2 Σ i·x<sub>i</sub>) / (n Σ x<sub>i</sub>) − (n+1)/n　（基尼系数）</div>
+      <div class="formula">δ<sub>w</sub> = log[(y<sub>w</sub><sup>p</sup>+α<sub>w</sub>)/(N<sup>p</sup>+α<sub>0</sub>−y<sub>w</sub><sup>p</sup>−α<sub>w</sub>)] − log[(y<sub>w</sub><sup>r</sup>+α<sub>w</sub>)/(N<sup>r</sup>+α<sub>0</sub>−y<sub>w</sub><sup>r</sup>−α<sub>w</sub>)]</div>
+      <div class="formula">z<sub>w</sub> = δ<sub>w</sub> / √(1/(y<sub>w</sub><sup>p</sup>+α<sub>w</sub>) + 1/(y<sub>w</sub><sup>r</sup>+α<sub>w</sub>))</div>
+      <div class="formula">p(w|z) ∝ (n<sub>zw</sub>+β)/(n<sub>z</sub>+Vβ) · (n<sub>dz</sub>+α)/(n<sub>d</sub>+Kα)　（LDA 吉布斯条件）</div>
+      <div class="formula">cos(u,v) = u·v / (‖u‖‖v‖)　（TF-IDF 向量相似度）</div>
+      <p class="note">注：所有统计在诗题（标题）层面进行，未涉及诗正文；「诗作数」为原表诗题列表的条目数，同一题组诗的不同首分别计数。</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>下载数据表</h3>
+    <p class="sub">CSV 均为 UTF-8 with BOM，可直接用 Excel 打开。</p>
+    <div class="dl" id="downloads"></div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>在 GitHub Pages 上发布</h3>
+    <div class="method" style="columns:1">
+      <p>本项目是一个纯静态站点：没有构建步骤、没有外部 CDN、没有后端。把仓库根目录推上去，在 <b>Settings → Pages</b> 里选择分支 <code>main</code> 与目录 <code>/docs</code> 即可——站点就在 <code>docs/</code> 里。</p>
+      <p>命令行版本：<code>git init &amp;&amp; git add . &amp;&amp; git commit -m "poetry atlas" &amp;&amp; git branch -M main &amp;&amp; git remote add origin https://github.com/&lt;你的账号&gt;/poetry-atlas.git &amp;&amp; git push -u origin main</code>，随后在仓库 Settings → Pages 中选择 <code>main</code> + <code>/docs</code>。几分钟后访问 <code>https://&lt;你的账号&gt;.github.io/poetry-atlas/</code>。</p>
+      <p>仓库根目录已放置 <code>.nojekyll</code>，避免以下划线开头的文件名被 Jekyll 忽略；<code>scripts/</code> 内的 Python 脚本可脱离网页单独复现全部 JSON 与 CSV。</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>字段口径</h3>
+    <div class="scroll" style="max-height:340px">
+      <table class="dt"><thead><tr><th>字段</th><th>含义</th><th>例</th></tr></thead>
+        <tbody>
+          <tr><td>人物ID</td><td>原表人物编号</td><td>1</td></tr>
+          <tr><td>姓名 / 朝代</td><td>诗人名与原始断代标签</td><td>刘世南 / 现当代</td></tr>
+          <tr><td>诗作总数</td><td>原表声明的作品数</td><td>60</td></tr>
+          <tr><td>诗题 / 体裁</td><td>按「；」切分后的条目标题与其体裁后缀</td><td>卧病 / 律诗</td></tr>
+          <tr><td>分期</td><td>断代归一化后的九个时期</td><td>隋唐五代</td></tr>
+          <tr><td>集句诗 / 步韵诗</td><td>原表标记（1/0）</td><td>246 / 926 人</td></tr>
+        </tbody></table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="wrap row">
+  <div>诗海图谱 · 以《人物诗作表》为语料的文本挖掘可视化实验 · 生成于 <span id="gen-date"></span></div>
+  <div>纯静态页面 · 零外部依赖 · 可直接部署于 GitHub Pages</div>
+</div></footer>
+
+<script src="assets/viz.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+data/
+__pycache__/
+*.pyc
+*.log
+*.png
+!docs/**/*.png
+.DS_Store
+Thumbs.db
